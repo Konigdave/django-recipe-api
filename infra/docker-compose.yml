@@ -6,9 +6,6 @@ services:
       - ./setup:/tf/setup
       - ./deploy:/tf/deploy
     working_dir: /tf
-    env:
-      UID: 1000
-      GID: 1000
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}

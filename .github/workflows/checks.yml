@@ -9,9 +9,6 @@ jobs:
   test-lint:
     name: Test and Lint
     uses: ./.github/workflows/test-and-lint.yml
-    env:
-      UID: 1000
-      GID: 1000
     secrets:
       DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
