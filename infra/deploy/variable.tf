@@ -15,3 +15,14 @@ variable "contact" {
   type        = string
   default     = "admin@recipeapp.com"
 }
+
+variable "db_username" {
+  description = "Username for the recipe RDS database."
+  type        = string
+  default     = "recipeappadmin"
+}
+
+variable "db_password" {
+  description = "Password for the recipe RDS database."
+  type        = string
+}
