@@ -196,3 +196,6 @@ resource "aws_iam_user_policy_attachment" "rds" {
   user       = aws_iam_user.cd.name
   policy_arn = aws_iam_policy.rds.arn
 }
+resource "aws_iam_service_linked_role" "rds" {
+  aws_service_name = "rds.amazonaws.com"
+}
