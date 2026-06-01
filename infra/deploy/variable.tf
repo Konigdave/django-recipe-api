@@ -26,3 +26,8 @@ variable "db_password" {
   description = "Password for the recipe RDS database."
   type        = string
 }
+
+variable "ecr_proxy_image" {
+  description = "The path of the proxy image in ECR."
+  type        = string
+}
