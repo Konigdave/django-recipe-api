@@ -31,3 +31,12 @@ variable "ecr_proxy_image" {
   description = "The path of the proxy image in ECR."
   type        = string
 }
+
+variable "ecr_app_image" {
+  description = "The path of the app image in ECR."
+  type        = string
+}
+
+variable "django_secret_key" {
+  description = "secret key for django"
+}
