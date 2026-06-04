@@ -1,8 +1,10 @@
 server {
     listen ${LISTEN_PORT};
 
-    location /static/static/ {
+location /static/static/ {
         alias /vol/web/static/;
+        types { text/css css; }
+        default_type text/plain;
     }
 
     location /static/media/ {
