@@ -2,11 +2,11 @@ server {
     listen ${LISTEN_PORT};
 
 location /static/static/ {
-        root /vol/web;
+        root /vol/web/static/;
     }
 
     location /static/media/ {
-        root /vol/web;
+        root /vol/web/media/;
     }
 
     location / {
