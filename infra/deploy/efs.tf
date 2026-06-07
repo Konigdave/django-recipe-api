@@ -48,12 +48,12 @@ resource "aws_efs_access_point" "media" {
   }
 }
 
-import {
-  to = aws_efs_mount_target.media_a
-  id = "fsmt-0268f9f3777f0ee33"   
-}
+#import {
+#  to = aws_efs_mount_target.media_a
+#  id = "fsmt-0268f9f3777f0ee33"   
+#}
 
-import {
-  to = aws_efs_mount_target.media_b
-  id = "fsmt-0c29a28086358a78e"  
-}
+#import {
+#  to = aws_efs_mount_target.media_b
+#  id = "fsmt-0c29a28086358a78e"  
+#}
