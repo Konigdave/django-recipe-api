@@ -4,8 +4,12 @@ terraform {
       source  = "hashicorp/aws"
       version = "5.23.0"
     }
+  cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
-
+  
   backend "s3" {
     bucket               = "devops-recipeapp-tfstate"
     key                  = "tf-state-deploy"
@@ -14,6 +18,11 @@ terraform {
     encrypt              = true
     dynamodb_table       = "devops-recipeapp-api-tflock"
   }
+}
+
+# Configure the Cloudflare Provider using variables
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 provider "aws" {

@@ -16,3 +16,5 @@ services:
       - TF_VAR_django_secret_key=${TF_VAR_django_secret_key}
       - TF_VAR_ecr_proxy_image=${TF_VAR_ecr_proxy_image}
       - TF_VAR_ecr_app_image=${TF_VAR_ecr_app_image}
+      - TF_VAR_cloudflare_zone_id
+      - TF_VAR_cloudflare_api_token

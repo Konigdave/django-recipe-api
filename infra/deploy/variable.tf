@@ -40,3 +40,14 @@ variable "ecr_app_image" {
 variable "django_secret_key" {
   description = "secret key for django"
 }
+
+variable "cloudflare_zone_id" {
+  type        = string
+  description = "The Zone ID for david-cloud.site"
+}
+
+variable "cloudflare_api_token" {
+  type        = string
+  description = "Secure API token to manage Cloudflare DNS records"
+  sensitive   = true
+}
