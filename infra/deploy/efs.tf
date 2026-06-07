@@ -50,10 +50,10 @@ resource "aws_efs_access_point" "media" {
 
 import {
   to = aws_efs_mount_target.media_a
-  id = "fs-0aff5a1e5d2ddefb1/us-east-1a"
+  id = "fsmt-0268f9f3777f0ee33"   
 }
 
 import {
   to = aws_efs_mount_target.media_b
-  id = "fs-0aff5a1e5d2ddefb1/us-east-1b" 
+  id = "fsmt-0c29a28086358a78e"  
 }
