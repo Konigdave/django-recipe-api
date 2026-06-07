@@ -154,3 +154,10 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
 }
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://david-cloud.site',
+    'https://*.david-cloud.site' # This safely handles any future subdomains without needing to update this list again.
+]
