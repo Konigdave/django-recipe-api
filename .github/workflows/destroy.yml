@@ -18,8 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Terraform Destroy
-      - name: Terraform State Remove Service Linked Role
-        run: docker compose run --rm terraform state rm aws_iam_service_linked_role.ecs
         env:
           AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
