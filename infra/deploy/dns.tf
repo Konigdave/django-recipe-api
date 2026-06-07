@@ -3,5 +3,5 @@ resource "cloudflare_record" "api" {
   name    = "@"                     # Root domain (david-cloud.site)
   content = aws_lb.api.dns_name    # Dynamically tracking your live ALB address!
   type    = "CNAME"
-  proxied = false                   # DNS Only (Gray Cloud)
+  proxied = true                    # DNS Only (Gray Cloud)
 }
