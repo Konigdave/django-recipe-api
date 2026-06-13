@@ -1,6 +1,6 @@
 services:
   terraform:
-    image: hashicorp/terraform:1.6.2
+    image: hashicorp/terraform:1.11
     user: "${USER_ID}:${GROUP_ID}"
     volumes:
       - ./setup:/tf/setup
