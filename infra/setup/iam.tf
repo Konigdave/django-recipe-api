@@ -39,19 +39,19 @@ data "aws_iam_policy_document" "tf_backend" {
   }
 
 
-  statement {
-    effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:DescribeTable"
-    ]
+  # statement {
+  #   effect = "Allow"
+  #   actions = [
+  #     "dynamodb:GetItem",
+  #     "dynamodb:PutItem",
+  #     "dynamodb:DeleteItem",
+  #     "dynamodb:DescribeTable"
+  #   ]
 
-    resources = [
-      "arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"
-    ]
-  }
+  #   resources = [
+  #     "arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"
+  #   ]
+  # }
 }
 
 resource "aws_iam_policy" "tf_backend" {
