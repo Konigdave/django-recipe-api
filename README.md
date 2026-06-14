@@ -55,7 +55,7 @@ Infrastructure remains fully reproducible
 Faster recovery after complete infrastructure rebuilds
 DNS configuration managed as code
 
-## Architecture
+## Network Architecture
 
 ![Architecture Diagram](docs/images/Network-Diagram.jpg)
 
