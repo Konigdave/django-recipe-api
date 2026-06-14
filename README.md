@@ -77,10 +77,10 @@ Root Cause
 
 The Nginx configuration used the root directive inside the /static/ location block:
 
-location /static/ {
+```location /static/ {
     root /vol/web/static;
-}
-
+} 
+```
 When a request such as:
 
 
