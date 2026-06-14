@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - prod
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
 
 jobs:
   test-lint:
