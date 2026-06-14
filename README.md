@@ -39,3 +39,16 @@ Cloudflare provides:
 - DDoS protection
 
 while maintaining significantly lower operational costs than an equivalent AWS-only implementation.
+
+## Architecture
+
+![Architecture Diagram](docs/images/Network-Diagram.jpg)
+
+Request Flow:
+
+1. User sends HTTPS request
+2. Cloudflare handles DNS resolution and SSL
+3. Traffic reaches the AWS Application Load Balancer
+4. ALB forwards requests to ECS Fargate tasks
+5. Nginx proxies requests to Django
+6. Django communicates with PostgreSQL hosted on Amazon RDS
