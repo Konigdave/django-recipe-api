@@ -4,4 +4,4 @@
 
 Production-style deployment of a Django REST API using AWS ECS Fargate, Terraform, GitHub Actions, Amazon RDS PostgreSQL, and Cloudflare.
 
-![Architecture Diagram](docs/images/my Diagram-Architecture.jpg)
+![Architecture Diagram](docs/images/architecture-diagram.jpg)
