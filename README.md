@@ -52,3 +52,71 @@ Request Flow:
 4. ALB forwards requests to ECS Fargate tasks
 5. Nginx proxies requests to Django
 6. Django communicates with PostgreSQL hosted on Amazon RDS
+
+## Infrastructure
+
+| Component | Purpose |
+|------------|------------|
+| ECS Fargate | Container execution |
+| ECR | Container registry |
+| RDS PostgreSQL | Persistent data storage |
+| ALB | Traffic distribution |
+| Terraform | Infrastructure as Code |
+| GitHub Actions | CI/CD |
+| Cloudflare | DNS, SSL, CDN |
+
+## Challenges & Lessons Learned
+
+Challenge 1: Static Assets Returning 404 Errors
+
+Problem
+
+After deploying the application to ECS Fargate, the Django Admin interface and frontend loaded as unstyled HTML. Browser developer tools showed repeated 404 Not Found errors for CSS and JavaScript assets.
+
+Root Cause
+
+The Nginx configuration used the root directive inside the /static/ location block:
+
+location /static/ {
+    root /vol/web/static;
+}
+
+When a request such as:
+
+
+
+## Future Improvements
+
+Planned enhancements:
+
+- Replace ECS rolling deployments with blue/green deployments
+- Add CloudWatch dashboards and alarms
+- Introduce centralized logging
+- Add ECS autoscaling policies
+- Implement automated backup verification
+- Expand infrastructure to support multiple applications under subdomains
+
+## Skills Demonstrated
+
+- AWS ECS Fargate
+- Amazon RDS PostgreSQL
+- Terraform
+- Docker
+- GitHub Actions
+- Cloudflare
+- Infrastructure as Code
+- CI/CD
+- Reverse Proxy Configuration
+- Linux
+- Networking
+- SSL/TLS
+
+## Repository Structure
+
+.
+├── app/
+├── proxy/
+├── deploy/
+├── .github/workflows/
+├── terraform/
+└── README.md
