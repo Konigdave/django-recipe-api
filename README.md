@@ -9,51 +9,58 @@ Production-style deployment of a Django REST API using AWS ECS Fargate, Terrafor
 
 This project demonstrates the deployment of a containerized Django REST API on AWS using modern DevOps and Cloud Engineering practices.
 
-The infrastructure is provisioned through Terraform, application deployments are automated through GitHub Actions, and traffic is routed through Cloudflare and an AWS Application Load Balancer into ECS Fargate services running in private subnets.
+Infrastructure is provisioned with Terraform, deployments are automated through GitHub Actions, and traffic flows through Cloudflare and an AWS Application Load Balancer to ECS Fargate services running in private subnets.
 
-The project was designed with three goals:
+### Project Goals
 
-- Learn Infrastructure as Code
+- Learn Infrastructure as Code (IaC)
 - Implement automated CI/CD pipelines
-- Build a cost-efficient cloud environment suitable for hosting multiple future projects
+- Build a cost-efficient cloud environment that can host future projects
+
+---
 
 ## Design Decisions
 
 ### Why ECS Fargate?
 
-I wanted container orchestration without managing EC2 instances.
+I wanted the benefits of container orchestration without managing EC2 instances.
 
 ### Why Terraform?
 
-Infrastructure was managed through Terraform to ensure all cloud resources could be version-controlled, reviewed, and reproduced consistently across environments. This approach reduces configuration drift and enables repeatable deployments through automated CI/CD pipelines.
+Terraform allows infrastructure to be:
 
-### Why Cloudflare instead of Route53 + CloudFront?
+- Version controlled
+- Peer reviewed
+- Reproducible across environments
 
-The primary motivation was cost efficiency and ownership of a custom domain for a personal portfolio platform.
+This reduces configuration drift and supports repeatable deployments through CI/CD pipelines.
+
+### Why Cloudflare Instead of Route53 + CloudFront?
+
+The primary motivation was cost efficiency while maintaining ownership of a custom domain for a personal portfolio platform.
 
 Cloudflare provides:
 
-DNS management
-SSL/TLS certificates
-CDN capabilities
-DDoS protection
+- DNS management
+- SSL/TLS certificates
+- CDN capabilities
+- DDoS protection
 
-without requiring multiple AWS services or additional operational costs. The domain also serves as a foundation for hosting future projects under dedicated subdomains.
+This consolidates functionality that would otherwise require multiple AWS services and additional operational costs.
 
-Why Automate DNS Management with Terraform?
+The domain also serves as a foundation for hosting future projects under dedicated subdomains.
+
+### Why Automate DNS Management?
 
 Application Load Balancers receive dynamically generated DNS endpoints whenever infrastructure is recreated.
 
-Without automation, each deployment would require manually updating Cloudflare DNS records.
+Without automation, DNS records would need to be updated manually after each deployment.
 
-To eliminate this operational overhead, the Cloudflare Terraform provider retrieves the newly created ALB endpoint and automatically updates the corresponding CNAME record during deployment.
+Using the Cloudflare Terraform provider:
 
-Benefits
-
-No manual DNS updates
-Infrastructure remains fully reproducible
-Faster recovery after complete infrastructure rebuilds
-DNS configuration managed as code
+1. Terraform retrieves the newly created ALB endpoint.
+2. The corresponding Cloudflare CNAME record is updated automatically.
+3. Deployments remain fully reproducible with minimal operational overhead.
 
 ## Network Architecture
 
@@ -80,131 +87,160 @@ Request Flow:
 | GitHub Actions | CI/CD |
 | Cloudflare | DNS, SSL, CDN |
 
-## Challenges & Lessons Learned
 
-Challenge 1: Static Assets Returning 404 Errors
+## Challenges & Lessons LearnedChallenges & Troubleshooting
+---
 
-Problem
+### Challenge 1: Static Assets Returning 404 Errors
 
-After deploying the application to ECS Fargate, the Django Admin interface and frontend loaded as unstyled HTML. Browser developer tools showed repeated 404 Not Found errors for CSS and JavaScript assets.
+#### Problem
 
-Root Cause
+After deploying to ECS Fargate, the Django Admin interface loaded as unstyled HTML. Browser developer tools showed repeated `404 Not Found` errors for CSS and JavaScript assets.
 
-The Nginx configuration used the root directive inside the /static/ location block:
-```
+#### Root Cause
+
+The Nginx configuration used the `root` directive:
+
+```nginx
 location /static/ {
     root /vol/web/static;
-} 
+}
 ```
+
 When a request such as:
-```
+
+```text
 /static/admin/css/base.css
-} 
 ```
-arrived, Nginx appended the entire request URI to the configured path, resulting in:
-```
+
+arrived, Nginx resolved it to:
+
+```text
 /vol/web/static/static/admin/css/base.css
 ```
-Because the duplicated /static/ directory did not exist, Nginx could not locate the requested files and returned 404 responses.
 
-Resolution
+The duplicated `/static/` directory did not exist, resulting in 404 responses.
 
-The configuration was updated to use the alias directive instead:
-```
+#### Resolution
+
+The configuration was updated to use `alias`:
+
+```nginx
 location /static/ {
     alias /vol/web/static/;
 }
 ```
-Unlike root, the alias directive replaces the matching URI prefix rather than appending it, allowing requests to resolve correctly to the collected Django static assets.
 
-Outcome
+Unlike `root`, `alias` replaces the matching URI prefix rather than appending it.
 
-Static assets were served successfully, restoring application styling and functionality. This issue reinforced the importance of understanding the behavioral differences between Nginx root and alias directives when serving static content.
+#### Outcome
 
-Challenge 2: CSRF Verification Failures Behind Cloudflare
+Static assets were served successfully, restoring application styling and functionality.
 
-Problem
+> **Lesson Learned:** Understand the difference between Nginx `root` and `alias` directives when serving static content.
 
-After configuring a custom domain through Cloudflare, authenticated requests submitted through the Django Admin interface consistently failed with:
-```
+---
+
+### Challenge 2: CSRF Verification Failures Behind Cloudflare
+
+#### Problem
+
+After configuring a custom domain through Cloudflare, authenticated Django Admin requests failed with:
+
+```text
 403 Forbidden
 CSRF verification failed
 ```
-Root Cause
 
-Cloudflare was initially configured in Flexible SSL mode. While client traffic reached Cloudflare over HTTPS, requests were forwarded to the AWS Application Load Balancer over HTTP. Because the application was operating behind multiple proxy layers:
-```
+#### Root Cause
+
+Cloudflare was initially configured using **Flexible SSL**:
+
+```text
 User
 ↓
-Cloudflare
+Cloudflare (HTTPS)
 ↓
-Application Load Balancer
+ALB (HTTP)
 ↓
 Nginx
 ↓
 Django
 ```
-Django could not correctly determine the original request protocol and rejected form submissions during CSRF validation.
 
-Resolution
+Because requests traversed multiple proxy layers, Django could not reliably determine the original request protocol and rejected CSRF-protected form submissions.
 
-The Cloudflare SSL configuration was upgraded to Full SSL to ensure encrypted communication between Cloudflare and the Application Load Balancer. Additionally:
+#### Resolution
 
-Nginx was configured to forward the X-Forwarded-Proto header.
-Django was configured to trust forwarded HTTPS headers.
-The application domain was added to CSRF_TRUSTED_ORIGINS.
-```
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+- Switched Cloudflare SSL mode from **Flexible** to **Full**
+- Forwarded the `X-Forwarded-Proto` header from Nginx
+- Configured Django to trust forwarded HTTPS headers
+- Added the domain to `CSRF_TRUSTED_ORIGINS`
+
+```python
+SECURE_PROXY_SSL_HEADER = (
+    "HTTP_X_FORWARDED_PROTO",
+    "https"
+)
 
 CSRF_TRUSTED_ORIGINS = [
     "https://david-cloud.site",
     "https://*.david-cloud.site",
 ]
 ```
-Challenge 3: Terraform vs AWS Service-Linked Roles
 
-Problem
+#### Outcome
 
-Terraform deployments and infrastructure destruction intermittently failed when managing the ECS service-linked IAM role.
+CSRF validation succeeded and authenticated admin functionality was restored.
 
-During infrastructure destruction:
-```
+> **Lesson Learned:** SSL termination and proxy configuration must be considered together when deploying Django behind Cloudflare and load balancers.
+
+---
+
+### Challenge 3: Terraform vs AWS Service-Linked Roles
+
+#### Problem
+
+Terraform deployments and infrastructure destruction intermittently failed with IAM-related errors:
+
+```text
 AccessDenied: iam:DeleteServiceLinkedRole
 ```
-During subsequent deployments:
-```
+
+```text
 Service role name AWSServiceRoleForECS has been taken in this account
 ```
-Root Cause
 
-The project initially attempted to manage the ECS service-linked role through Terraform:
-```
+#### Root Cause
+
+The project attempted to manage the ECS service-linked role:
+
+```terraform
 resource "aws_iam_service_linked_role" "ecs" {
   aws_service_name = "ecs.amazonaws.com"
 }
 ```
-However, AWSServiceRoleForECS is an AWS-managed service-linked role that is automatically created when ECS is first used within an account.
 
-This resulted in two issues:
+However, `AWSServiceRoleForECS` is automatically managed by AWS.
 
-The CI/CD IAM user lacked permissions to delete service-linked roles.
-AWS had already created the role, preventing Terraform from recreating it.
+This caused two issues:
 
-The underlying problem was treating an AWS-managed resource as user-managed infrastructure.
+- Terraform attempted to recreate an AWS-managed role.
+- The CI/CD IAM user lacked permission to delete it.
 
-Resolution
+#### Resolution
 
-The ECS service-linked role was removed entirely from Terraform management:
+- Removed the service-linked role resource from Terraform
+- Removed associated `depends_on` references
+- Allowed AWS to manage the role automatically
 
-Removed the aws_iam_service_linked_role resource.
-Removed all depends_on references targeting the role.
-Allowed AWS to provision and manage the role automatically.
+#### Outcome
 
-Outcome
+Infrastructure deployment and destruction completed successfully without IAM conflicts.
 
-Infrastructure deployments and destruction completed successfully without IAM conflicts. This reinforced an important Infrastructure as Code principle:
+> **Lesson Learned:** Not every cloud resource should be managed through Terraform. AWS-managed service-linked roles should generally remain provider-owned resources.
 
-Not every cloud resource should be managed by Terraform. AWS-managed service-linked roles should generally be treated as provider-owned resources rather than application infrastructure.
+---
 
 ## Future Improvements
 
