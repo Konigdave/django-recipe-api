@@ -88,7 +88,7 @@ Request Flow:
 | Cloudflare | DNS, SSL, CDN |
 
 
-## Challenges & Lessons LearnedChallenges & Troubleshooting
+## Challenges & Troubleshooting
 ---
 
 ### Challenge 1: Static Assets Returning 404 Errors
