@@ -64,6 +64,7 @@ Using the Cloudflare Terraform provider:
 
 ## Network Architecture
 
+
 ![Architecture Diagram](docs/images/Network-Diagram.jpg)
 
 Request Flow:
