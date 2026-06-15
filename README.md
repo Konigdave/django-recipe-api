@@ -249,9 +249,9 @@ Planned enhancements:
 - Replace ECS rolling deployments with blue/green deployments
 - Add CloudWatch dashboards and alarms
 - Introduce centralized logging
-- Add ECS autoscaling policies
-- Implement automated backup verification
-- Expand infrastructure to support multiple applications under subdomains
+- Refactor Terraform configuration into reusable modules
+- Introduce environment-based deployment structure
+- Add separate dev/stage/prod environments
 
 ## Skills Demonstrated
 
