@@ -1,0 +1,44 @@
+FROM python:3.9 AS builder
+
+WORKDIR /app
+
+COPY ./requirements.txt /tmp/requirements.txt
+
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip
+
+RUN apt-get update && \
+    apt-get install -y \
+    build-essential \
+    libpq-dev \
+    libjpeg-dev
+
+RUN /py/bin/pip install -r /tmp/requirements.txt
+
+FROM python:3.9-slim AS runtime
+
+COPY --from=builder /py /py
+COPY ./app /app
+COPY ./scripts /scripts
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y \
+    postgresql-client \
+    libpq5 \
+    libjpeg62-turbo && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN useradd \
+    --uid 101 \
+    --create-home \
+    django-user
+RUN mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static
+RUN chown -R django-user:django-user /vol
+
+ENV PATH="/scripts:/py/bin:$PATH"
+
+RUN chmod -R +x /scripts
+USER django-user
+CMD ["run.sh"]
