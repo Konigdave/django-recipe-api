@@ -248,6 +248,7 @@ As part of improving the containerization strategy, I refactored the Django appl
 The builder stage contains compilation tooling and development libraries required to install packages such as `psycopg2` and `Pillow`, while the runtime stage contains only the application code, Python environment, and runtime dependencies.
 
 An interesting outcome was that the final image size increased from approximately 60.7 MB to 80.6 MB. This demonstrated that the primary purpose of multi-stage builds is not always image size reduction, but rather improved separation of build and runtime concerns, removal of unnecessary tooling from production containers, and alignment with common production deployment practices.
+
 ---
 
 ## Future Improvements
