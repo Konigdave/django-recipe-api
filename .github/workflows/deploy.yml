@@ -7,7 +7,7 @@ on:
       - prod
     paths-ignore:
       - 'docs/**'
-      - '*.md'
+      # - '*.md'
 
 jobs:
   test-lint:
