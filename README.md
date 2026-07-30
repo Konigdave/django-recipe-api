@@ -241,6 +241,14 @@ Infrastructure deployment and destruction completed successfully without IAM con
 
 > **Lesson Learned:** Not every cloud resource should be managed through Terraform. AWS-managed service-linked roles should generally remain provider-owned resources.
 
+### Migrating to a Multi-Stage Docker Build
+
+As part of improving the containerization strategy, I refactored the Django application image from a single-stage Alpine-based build to a multi-stage build using Python Slim.
+
+The builder stage contains compilation tooling and development libraries required to install packages such as `psycopg2` and `Pillow`, while the runtime stage contains only the application code, Python environment, and runtime dependencies.
+
+An interesting outcome was that the final image size increased from approximately 60.7 MB to 80.6 MB. This demonstrated that the primary purpose of multi-stage builds is not always image size reduction, but rather improved separation of build and runtime concerns, removal of unnecessary tooling from production containers, and alignment with common production deployment practices.
+
 ---
 
 ## Future Improvements
